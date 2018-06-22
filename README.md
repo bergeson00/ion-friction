@@ -10,4 +10,4 @@ versions of the code used a constant term for the Coulomb logarithm.
 June 22, 2018
 
 I started writing a python calculation. 
-1. In the first setp I loaded 2e6 particles onto a cartesian grid, calculated their radial position and then calculated the density using two different methods. It looks like the numpy.bincounts function is reasonably fast and closer to the analytic density than using histogram1d from the fast_histogram library.
+1. In the first setp I loaded 2e6 particles onto a cartesian grid, calculated their radial position and then calculated the density using two different methods. It looks like the numpy.bincounts function is reasonably fast and closer to the analytic density than using histogram1d from the fast_histogram library. --> test001.py
