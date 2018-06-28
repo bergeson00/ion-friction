@@ -11,3 +11,5 @@ versions of the code used a constant term for the Coulomb logarithm.
 2. (6/25/18) I changed the density calculation to reduce the noise near the origin. Added thermal velocity calculation. I changed the binning and grid so that histogram1d produces the proper "known" result for density and velocity. --> test002.py
 
 3. (6/27/18) I streamlined the code a little, defining functions in sdbfunctions.py and constants in myConstants.py. The file test004.py moves 5e5 particles 1000 steps in 156 seconds. The calculated rms velocity, rms size, electron temperature, and density are reasonably close to the analytic values. However, there are still systematic differences. They appear to be related to how the (Grad n) / n is calculated and depend on smoothing, etc. A reasonable compromise is no smoothing on the density, window = 11, poly = 2 on the golay filtering of dlogndr.
+
+4. (6/28/18) I updated the smoothing on calc_dlogndr in sdbfunctions.py. I added in the particles of mass 2 in the main function and ran afew checks to make sure it wasn't broken. --> test005.py. The next step is to think about friction.
