@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
-def calc_dens(x1,y1,z1,xmax,dx,nbins):
+def calc_dens(x1,y1,z1,xmax,dx,nbins,weight):
     """
     This function calculates the radial density of N1 number of particles
     from three cartesian arrays, x1, y1, z1. These arrays:
@@ -33,6 +33,8 @@ def calc_dens(x1,y1,z1,xmax,dx,nbins):
         rgrid = np.sqrt( 3 ) * xgrid[n1:nbins] 
     Then the theoretical density is equal to 
         d0 = N1 * (2*np.pi*r0**2)**(-1.5) * np.exp(-rgrid**2 / 2 / r0**2) 
+    If a weight is specified, then this density, d0 or d1, is multiplied
+    by the weight
     """
     N1 = np.size(x1)
     n1 = np.int( ( nbins - 1 ) / 2 )
@@ -40,7 +42,7 @@ def calc_dens(x1,y1,z1,xmax,dx,nbins):
     hy1 = histogram1d(y1, range=[-xmax - 0.5*dx, xmax + 0.5*dx], bins = nbins)
     hz1 = histogram1d(z1, range=[-xmax - 0.5*dx, xmax + 0.5*dx], bins = nbins)
     d1 = hx1 * hy1 * hz1 * N1**(-2) * dx**(-3)
-    d1 = d1[n1:nbins]
+    d1 = d1[n1:nbins] * weight
     return d1
 
 def densplot(x,y1,y2):
@@ -85,14 +87,17 @@ def calc_dlogndr(rgrid,d1,frac_cut):
             fit those 5 points to a line and then fill in the tail
         3.  Smooth the data
     """
+    win = 11     # must be odd
+    pol = 2
     dn = 5
     dr = rgrid[1] - rgrid[0]
+    #d1 = savgol_filter(d1, win, pol)
     dlogndr = np.zeros(np.shape(rgrid))
     b = np.argmin( (d1 - frac_cut*np.max(d1))**2 )
     dlogndr[0:b] = np.gradient(d1[0:b]) / d1[0:b]
-    coef = np.polyfit( rgrid[b-dn:b], dlogndr[b-dn:b], 1 )
+    coef = np.polyfit( rgrid[0:b], dlogndr[0:b], 1 )
     dlogndr[b-dn:np.size(d1)] = np.polyval(coef, rgrid[b-dn:np.size(d1)])
     dlogndr = dlogndr / dr
     dlogndr[0] = 0
-    dlogndr_s = savgol_filter(dlogndr, 11, 3)
+    dlogndr_s = savgol_filter(dlogndr, win, pol)
     return dlogndr_s
